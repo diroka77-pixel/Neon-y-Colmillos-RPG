@@ -16,7 +16,7 @@ Godot 4.3 estable, GDScript y renderizador Compatibility. Sin servicios externos
 | `main.gd` | Montaje, cámara, interacciones y persistencia local. |
 | `character_definition.gd` | Recurso de integración de arte aprobado. |
 
-La geometría del suelo y los edificios se conserva en las listas de dibujo de Godot. Solo la lluvia y los controles se redibujan continuamente. `y_sort_enabled` ordena edificios, terminales y marcador por la base en pantalla. La perspectiva es una proyección 2D isométrica; no se necesita geometría 3D.
+La geometría del suelo y los edificios se conserva en las listas de dibujo de Godot. Solo la lluvia y los controles se redibujan continuamente. `y_sort_enabled` ordena edificios, terminales y marcador por la base en pantalla. Las fachadas que ocultan al marcador reducen su opacidad para mantenerlo visible. La perspectiva es una proyección 2D isométrica; no se necesita geometría 3D.
 
 ## Generación
 
@@ -28,7 +28,7 @@ La repetibilidad queda definida para el algoritmo actual y Godot 4.3. Una actual
 
 Horizontal, pantalla completa, OpenGL Compatibility y APK ARM64. Controles independientes por índice de dedo, zona muerta de 12 %, velocidad proporcional y botón de correr mantenido. La pérdida de foco, la pausa o un cambio de tamaño limpian las entradas. Se guarda posición y terminales cada cinco segundos, al pausar y al salir. Una posición inválida vuelve al punto inicial. `REINICIAR` borra el progreso de exploración conservando la semilla.
 
-La compilación fija Java 17 y escribe explícitamente las rutas SDK de Android y Java en los ajustes de Godot. El ejecutable del motor y las plantillas se descargan fuera del proyecto para evitar empaquetarlos. La clave pública de depuración en `ci/debug.keystore.b64` se conserva entre builds: sirve exclusivamente para instalar pruebas encima de otras pruebas de este repositorio. No debe emplearse para distribución de producción.
+La compilación fija Java 17 y escribe explícitamente las rutas SDK de Android y Java en los ajustes de Godot. Se habilita `textures/vram_compression/import_etc2_astc`: Godot 4.3 rechaza la configuración de exportación Android sin esa opción y no explica el motivo en el error CLI. El ejecutable del motor y las plantillas se descargan fuera del proyecto para evitar empaquetarlos. La clave pública de depuración en `ci/debug.keystore.b64` se conserva entre builds: sirve exclusivamente para instalar pruebas encima de otras pruebas de este repositorio. No debe emplearse para distribución de producción.
 
 ## Diroka, Sora y Vane
 

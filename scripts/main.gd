@@ -12,6 +12,7 @@ var controls: Control
 var camera: Camera2D
 var actors: Node2D
 var beacons: Array[Node2D] = []
+var buildings: Array[Node2D] = []
 var world_seed := 1984
 var active_count := 0
 var toast_time := 0.0
@@ -30,6 +31,7 @@ func _ready() -> void:
 		var building := Building.new()
 		building.configure(data)
 		actors.add_child(building)
+		buildings.append(building)
 	for point in World.BEACONS:
 		var beacon := Beacon.new()
 		beacon.position = World.project(point)
@@ -53,7 +55,7 @@ func _ready() -> void:
 	ui.add_child(controls)
 	controls.interact_requested.connect(interact)
 	controls.reset_requested.connect(reset_progress)
-	controls.seed_label.text = "SEMILLA %d · Marcador técnico · Arte de protagonistas pendiente" % world_seed
+	controls.seed_label.text = "SEMILLA %d · Explora con el joystick · Mantén CORRER para acelerar" % world_seed
 	update_hint()
 	get_tree().auto_accept_quit = false
 
@@ -77,6 +79,8 @@ func _physics_process(delta: float) -> void:
 		player.direction = controls.movement
 	player.running = controls.running or Input.is_action_pressed("run")
 	player.step(delta)
+	for building in buildings:
+		building.update_occlusion(player.position)
 	camera.position = player.position
 	toast_time = maxf(0, toast_time - delta)
 	if toast_time == 0:

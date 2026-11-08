@@ -24,6 +24,7 @@ func step(delta: float) -> void:
 	position = World.project(ground_position).round()
 
 func _draw() -> void:
+	draw_arc(Vector2.ZERO, 10, 0, TAU, 16, Color("51c6c4"), 1)
 	draw_colored_polygon(PackedVector2Array([Vector2(-10, 0), Vector2(0, -4), Vector2(10, 0), Vector2(0, 4)]), Color("080e1c"))
 	draw_line(Vector2(0, 0), Vector2(0, -10), Color("357181"), 1)
 	draw_colored_polygon(PackedVector2Array([Vector2(-7, -13), Vector2(0, -20), Vector2(7, -13), Vector2(0, -6)]), Color("b5f2e9"))

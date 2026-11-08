@@ -107,6 +107,15 @@ func run() -> void:
 	root.add_child(scene)
 	await process_frame
 	scene.reset_progress()
+	var occlusion_checked := false
+	for building in scene.buildings:
+		var inside: Vector2 = building.position + (building.front + building.back) * 0.5 + Vector2(0, -10)
+		building.update_occlusion(inside)
+		if building.modulate.a < 0.5:
+			occlusion_checked = true
+		building.update_occlusion(Vector2(-10000, -10000))
+		check(is_equal_approx(building.modulate.a, 1.0), "Facade restores opacity outside silhouette")
+	check(occlusion_checked, "Foreground facades reveal marker")
 	scene.interact()
 	check(scene.active_count == 1, "Terminal activation")
 	scene.interact()

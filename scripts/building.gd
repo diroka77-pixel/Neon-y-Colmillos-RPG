@@ -7,6 +7,7 @@ var front := Vector2.ZERO
 var left := Vector2.ZERO
 var right := Vector2.ZERO
 var back := Vector2.ZERO
+var occlusion_outline := PackedVector2Array()
 const ACCENTS := [Color("48c6cf"), Color("c65289"), Color("bba568"), Color("708fae")]
 
 func configure(data: Dictionary) -> void:
@@ -17,7 +18,14 @@ func configure(data: Dictionary) -> void:
 	left = World.project(Vector2(footprint.position.x, footprint.end.y)) - position
 	right = World.project(Vector2(footprint.end.x, footprint.position.y)) - position
 	back = World.project(Vector2(footprint.position)) - position
+	var up := Vector2(0, -height_px)
+	occlusion_outline = PackedVector2Array([left, front, right, right + up, back + up, left + up])
 	queue_redraw()
+
+func update_occlusion(player_position: Vector2) -> void:
+	# Keep the controlled marker visible when a foreground facade covers it.
+	var obscured := Geometry2D.is_point_in_polygon(player_position + Vector2(0, -13) - position, occlusion_outline)
+	modulate.a = 0.30 if obscured else 1.0
 
 func quad(points: Array, color: Color) -> void:
 	draw_colored_polygon(PackedVector2Array(points), color)
@@ -29,6 +37,7 @@ func _draw() -> void:
 	quad([front, right, right + up, front + up], Color("141f30"))
 	quad([left + up, back + up, right + up, front + up], Color("384253"))
 	draw_polyline(PackedVector2Array([left + up, back + up, right + up, front + up, left + up]), Color("626479"), 1.0)
+	draw_polyline(PackedVector2Array([left + up + Vector2(0, 4), front + up + Vector2(0, 4), right + up + Vector2(0, 4)]), Color("192b3e"), 3.0)
 	draw_line(front, front + up, Color("687187"), 1.0)
 	# Horizontal facade bands, perspective windows and shutters.
 	for floor_index in range(1, int(height_px / 18.0)):
@@ -63,3 +72,11 @@ func _draw() -> void:
 	quad([door, door + Vector2(12, -6), door + Vector2(12, -25), door + Vector2(0, -19)], Color("0a1523"))
 	draw_line(door + Vector2(0, -20), door + Vector2(12, -26), accent, 2)
 	draw_line(left + Vector2(6, 0), left + up + Vector2(6, 4), Color("797080"), 2)
+	# Utility conduits and wall service panel add scale to the large facades.
+	var panel := left.lerp(front, 0.25) + Vector2(0, -18)
+	quad([panel, panel + Vector2(10, 5), panel + Vector2(10, 16), panel + Vector2(0, 11)], Color("465165"))
+	for i in range(3):
+		draw_line(panel + Vector2(2, 3 + i * 3), panel + Vector2(8, 6 + i * 3), Color("253449"), 1)
+	var cable_start := left + Vector2(0, -height_px + 8)
+	var cable_end := right + Vector2(0, -height_px + 8)
+	draw_polyline(PackedVector2Array([cable_start, back + Vector2(0, -height_px + 18), cable_end]), Color("0d1725"), 2)
