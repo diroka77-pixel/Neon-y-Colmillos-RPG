@@ -2,6 +2,7 @@
 set -euo pipefail
 engine="${1:?Path to Godot 4.3 required}"
 mkdir -p build
+touch build/.gdignore
 "$engine" --headless --path . --editor --quit 2>&1 | tee build/import.log
 ! grep -E 'SCRIPT ERROR|Parse Error|ERROR:' build/import.log
 "$engine" --headless --path . --script res://tests/run_tests.gd 2>&1 | tee build/tests.log

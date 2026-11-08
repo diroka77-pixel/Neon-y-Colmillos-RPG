@@ -17,6 +17,7 @@ var world_seed := 1984
 var active_count := 0
 var toast_time := 0.0
 var save_elapsed := 0.0
+var movement_reported := false
 
 func _ready() -> void:
 	configure_keyboard()
@@ -58,6 +59,8 @@ func _ready() -> void:
 	controls.seed_label.text = "SEMILLA %d · Explora con el joystick · Mantén CORRER para acelerar" % world_seed
 	update_hint()
 	get_tree().auto_accept_quit = false
+	if OS.is_debug_build():
+		print("NEON_READY seed=", world_seed)
 
 func configure_keyboard() -> void:
 	var bindings := {"move_left": [KEY_A, KEY_LEFT], "move_right": [KEY_D, KEY_RIGHT], "move_up": [KEY_W, KEY_UP], "move_down": [KEY_S, KEY_DOWN], "interact": [KEY_E, KEY_SPACE], "run": [KEY_SHIFT]}
@@ -78,7 +81,12 @@ func _physics_process(delta: float) -> void:
 	if controls.movement.length_squared() > 0:
 		player.direction = controls.movement
 	player.running = controls.running or Input.is_action_pressed("run")
+	var previous_position: Vector2 = player.ground_position
 	player.step(delta)
+	if not movement_reported and player.ground_position.distance_to(previous_position) > 0.001:
+		movement_reported = true
+		if OS.is_debug_build():
+			print("NEON_MOVED")
 	for building in buildings:
 		building.update_occlusion(player.position)
 	camera.position = player.position
@@ -110,6 +118,8 @@ func interact() -> void:
 		beacons[index].activated = true
 		beacons[index].queue_redraw()
 		active_count += 1
+		if OS.is_debug_build():
+			print("NEON_TERMINAL ", active_count)
 		controls.message.text = "Terminal registrado · %d/3" % active_count if active_count < 3 else "Exploración completada · Los tres terminales están registrados."
 		save_progress()
 	toast_time = 3.0
