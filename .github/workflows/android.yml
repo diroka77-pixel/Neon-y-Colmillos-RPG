@@ -40,7 +40,7 @@ jobs:
       - name: Capture visual preview
         run: |
           command -v xvfb-run || { sudo apt-get update -qq; sudo apt-get install -y xvfb; }
-          xvfb-run -a Godot_v4.3-stable_linux.x86_64 --path . --script res://tests/capture.gd -- res://build/preview.png 2>&1 | tee build/visual.log
+          xvfb-run -a Godot_v4.3-stable_linux.x86_64 --audio-driver Dummy --path . --script res://tests/capture.gd -- res://build/preview.png 2>&1 | tee build/visual.log
           ! grep -E 'SCRIPT ERROR|ERROR:' build/visual.log
       - name: Configure Android SDK and persistent public test signing key
         run: |
